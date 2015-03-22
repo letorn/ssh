@@ -16,43 +16,39 @@ public class BaseDAOImpl<T> {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	protected Session callCurrentSession() {
+	protected Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
-	protected Class<T> callTClass() {
+	protected Class<T> getTClass() {
 		Type genType = getClass().getGenericSuperclass();
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 		return (Class) params[0];
 	}
 
-	protected Class<T> getTClass() {
-		return null;
-	}
-
 	public Serializable save(T o) {
-		return callCurrentSession().save(o);
+		return getCurrentSession().save(o);
 	}
 
 	public void delete(T o) {
-		callCurrentSession().delete(o);
+		getCurrentSession().delete(o);
 	}
 
 	public void update(T o) {
-		callCurrentSession().update(o);
+		getCurrentSession().update(o);
 	}
 
 	public void saveOrUpdate(T o) {
-		callCurrentSession().saveOrUpdate(o);
+		getCurrentSession().saveOrUpdate(o);
 	}
 
 	public List<T> findAll() {
-		String hql = String.format("from %s", callTClass().getName());
+		String hql = String.format("from %s", getTClass().getName());
 		return find(hql, null, null, null);
 	}
 
 	public List<T> find(Integer start, Integer limit) {
-		String hql = String.format("from %s", callTClass().getName());
+		String hql = String.format("from %s", getTClass().getName());
 		return find(hql, null, start, limit);
 	}
 
@@ -65,7 +61,7 @@ public class BaseDAOImpl<T> {
 	}
 
 	public List<T> find(String hql, Object[] params, Integer start, Integer limit) {
-		Query query = callCurrentSession().createQuery(hql);
+		Query query = getCurrentSession().createQuery(hql);
 		if (params != null && params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				query.setParameter(i, params[i]);
@@ -81,7 +77,7 @@ public class BaseDAOImpl<T> {
 	}
 
 	public T get(Serializable id) {
-		return (T) callCurrentSession().get(callTClass(), id);
+		return (T) getCurrentSession().get(getTClass(), id);
 	}
 
 	public T get(String hql, Object[] params) {
@@ -89,23 +85,23 @@ public class BaseDAOImpl<T> {
 		return list.size() != 1 ? null : list.get(0);
 	}
 
-	public Long countAll() {
-		String hql = String.format("select count(id) from %s", callTClass().getName());
+	public Integer countAll() {
+		String hql = String.format("select count(id) from %s", getTClass().getName());
 		return count(hql, null);
 	}
 
-	public Long count(String hql) {
+	public Integer count(String hql) {
 		return count(hql, null);
 	}
 
-	public Long count(String hql, Object[] params) {
-		Query query = callCurrentSession().createQuery(hql);
+	public Integer count(String hql, Object[] params) {
+		Query query = getCurrentSession().createQuery(hql);
 		if (params != null && params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				query.setParameter(i, params[i]);
 			}
 		}
-		return (Long) query.uniqueResult();
+		return ((Long) query.uniqueResult()).intValue();
 	}
 
 	public Integer executeHQL(String hql) {
@@ -113,7 +109,7 @@ public class BaseDAOImpl<T> {
 	}
 
 	public Integer executeHQL(String hql, Object[] params) {
-		Query query = callCurrentSession().createQuery(hql);
+		Query query = getCurrentSession().createQuery(hql);
 		if (params != null && params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				query.setParameter(i, params[i]);
