@@ -27,11 +27,11 @@ public interface BaseDAO<T> {
 
 	public T get(String hql, Object[] params);
 
-	public Long countAll();
+	public Integer countAll();
 
-	public Long count(String hql);
+	public Integer count(String hql);
 
-	public Long count(String hql, Object[] params);
+	public Integer count(String hql, Object[] params);
 
 	public Integer executeHQL(String hql);
 
